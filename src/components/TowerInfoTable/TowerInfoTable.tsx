@@ -173,12 +173,14 @@ const cell = (label: string, onCountedChanged: (() => void) | undefined = undefi
 interface TowerInfoTableProps {
   towers: Tower[],
   columns?: string[],
+  onCountedChanged?: (() => void),
   removeTower?: (index: number) => void,
 }
 
 const TowerInfoTable: FC<TowerInfoTableProps> = ({
   towers,
   columns = ["type", "upgrades", "buffs", "cost", "sellValue", "favoredSellValue"],
+  onCountedChanged = undefined,
   removeTower
 }) =>
 { 
@@ -190,6 +192,8 @@ const TowerInfoTable: FC<TowerInfoTableProps> = ({
   
   function CountedTowersChanged(){
     setCountedTowers(towers.filter( (t) => t?.isCounted === true));
+    if (onCountedChanged)
+      onCountedChanged();
   }
   const [columnTargets, setColumnTargets] = useState({} as { [key: string]: number });
   function getColumnTarget(col : string) {

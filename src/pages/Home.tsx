@@ -29,9 +29,10 @@ function Home() {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const updateTowers = (towers: Tower[]) => {
+    const updateTowers = (all_towers: Tower[]) => {
       let buccaneersBuffed = 0;
-      return towers.map(
+      let towers = all_towers.filter( (t) => t?.isCounted === true);
+      return all_towers.map(
         tower => {
           if (tower.type === TowerType.Farm && tower.upgrades[0] === 4) {
             tower = new Tower(
@@ -98,7 +99,7 @@ function Home() {
   
     const addTower = (tower: Tower, sacrifice = false, oc: Tower[] = []) => {
       let newTowers = [
-        ...(sacrifice ? towers.filter(tower => tower.type !== TowerType.Farm || tower.upgrades.some((x: number) => x === 5)) : towers),
+        ...(sacrifice ? towers.filter( (t) => t?.isCounted === true).filter(tower => tower.type !== TowerType.Farm || tower.upgrades.some((x: number) => x === 5)) : towers),
         tower,
         ...oc
       ];
@@ -119,7 +120,9 @@ function Home() {
         tower => new Tower(tower.type, tower.upgrades, mk, difficulty, tower.buffs)
       ))
     }
-  
+    function OnCountedChanged(){
+        setTowers(updateTowers(towers));
+    }
     return (
         <>
         <AppBar position="relative">
@@ -171,7 +174,7 @@ function Home() {
               validTowers={[TowerType.Farm, TowerType.Buccaneer, TowerType.Village, TowerType.Engineer]}
               farmingModifiers
             />
-            <TowerInfoTable towers={towers} columns={["type", "upgrades", "buffs", "cost", "income", "efficiency", "sellValue", "favoredSellValue", "sellEfficiency", "favoredSellEfficiency"]} removeTower={removeTower}/>
+            <TowerInfoTable onCountedChanged={OnCountedChanged} towers={towers} columns={["type", "upgrades", "buffs", "cost", "income", "efficiency", "sellValue", "favoredSellValue", "sellEfficiency", "favoredSellEfficiency"]} removeTower={removeTower}/>
           </Stack>
         </Container>
       </>
